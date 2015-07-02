@@ -3,6 +3,9 @@ package com.typesafe.config.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.pcollections.HashPMap;
+import org.pcollections.HashTreePMap;
+
 /**
  * This exists because we have to memoize resolved substitutions as we go
  * through the config tree; otherwise we could end up creating multiple copies
@@ -28,8 +31,8 @@ final class ResolveMemos {
     ResolveMemos put(MemoKey key, AbstractConfigValue value) {
         // completely inefficient, but so far nobody cares about resolve()
         // performance, we can clean it up someday...
-        Map<MemoKey, AbstractConfigValue> copy = new HashMap<MemoKey, AbstractConfigValue>(memos);
-        copy.put(key, value);
+        HashPMap<MemoKey, AbstractConfigValue> copy = HashTreePMap.<MemoKey, AbstractConfigValue>from(memos);
+        copy = copy.plus(key, value);
         return new ResolveMemos(copy);
     }
 }
